@@ -8,6 +8,8 @@
 unsigned char heap[HEAP_SIZE];
 MEMORY_MANAGE_AREA* manage_head_ptr = NULL;
 
+static void merge_manage_free_areas(MEMORY_MANAGE_AREA *this, const MEMORY_MANAGE_AREA *next);
+
 void* kumalloc(size_t size)
 {
     if (manage_head_ptr == NULL) {
@@ -55,22 +57,14 @@ void kufree(void* p)
     if (manage_area->next != NULL) {
         MEMORY_MANAGE_AREA* next = manage_area->next;
         if (next->flag == NOUSE) {
-            manage_area->next = next->next;
-            manage_area->size += next->size + sizeof(MEMORY_MANAGE_AREA);
-            if (manage_area->next != NULL) {
-                manage_area->next->prev = manage_area;
-            }
+            merge_manage_free_areas(manage_area, next);
         }
     }
 
     if (manage_area->prev != NULL) {
         MEMORY_MANAGE_AREA *prev = manage_area->prev;
         if (prev->flag == NOUSE) {
-            prev->next = manage_area->next;
-            prev->size += manage_area->size + sizeof(MEMORY_MANAGE_AREA);
-            if (prev->next != NULL) {
-                prev->next->prev = prev;
-            }
+            merge_manage_free_areas(prev, manage_area);
         }
     }
 }
@@ -87,4 +81,13 @@ int size_manage_areas()
         num++;
     }
     return num;
+}
+
+static void merge_manage_free_areas(MEMORY_MANAGE_AREA *this, const MEMORY_MANAGE_AREA *next)
+{
+    this->next = next->next;
+    this->size += next->size + sizeof(MEMORY_MANAGE_AREA);
+    if (this->next != NULL) {
+        this->next->prev = this;
+    }
 }
