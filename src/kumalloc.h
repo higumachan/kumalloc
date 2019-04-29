@@ -21,7 +21,7 @@ typedef struct MemoryManageArea
 } MEMORY_MANAGE_AREA;
 
 void* kumalloc(size_t size);
-void free(void* p);
+void kufree(void* p);
 
 extern MEMORY_MANAGE_AREA* manage_head_ptr;
 extern unsigned char heap[HEAP_SIZE];

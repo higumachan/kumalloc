@@ -24,7 +24,7 @@ int main()
         assert(manage_head_ptr->next->flag == USE);
         assert(manage_head_ptr->next->next->flag == NOUSE);
 
-        free(q);
+        kufree(q);
         assert(manage_head_ptr->next->flag == NOUSE);
     }
 
@@ -35,8 +35,8 @@ int main()
     assert(manage_head_ptr->next->next->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA) * 3 - sizeof(int) - sizeof(int) * 5);
     assert(manage_head_ptr->next->next->flag == NOUSE);
 
-    free(q);
-    free(p);
+    kufree(q);
+    kufree(p);
 
     assert(size_manage_areas() == 1);
     assert(manage_head_ptr->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA));

@@ -46,7 +46,7 @@ void* kumalloc(size_t size)
     return (void *)(p + 1);
 }
 
-void free(void* p)
+void kufree(void* p)
 {
     MEMORY_MANAGE_AREA* manage_area = ((MEMORY_MANAGE_AREA *)p) - 1;
 
