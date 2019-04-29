@@ -28,7 +28,7 @@ int main()
         assert(manage_head_ptr->next->flag == NOUSE);
     }
 
-    int*q = kumalloc(sizeof(int) * 5);
+    int* q = kumalloc(sizeof(int) * 5);
 
     assert(manage_head_ptr->next->size == sizeof(int) * 5);
     assert(manage_head_ptr->next->flag == USE);
@@ -40,6 +40,74 @@ int main()
 
     assert(size_manage_areas() == 1);
     assert(manage_head_ptr->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA));
+
+    {
+        int* qs[5];
+
+        for (int i = 0; i < 5; i++) {
+            qs[i] = kumalloc(sizeof(int));
+        }
+        assert(size_manage_areas() == 6);
+        kufree(qs[1]);
+        kufree(qs[3]);
+        assert(size_manage_areas() == 6);
+        kufree(qs[2]);
+        assert(size_manage_areas() == 4);
+        kufree(qs[0]);
+        kufree(qs[4]);
+    }
+
+    {
+        int* qs[5];
+
+        for (int i = 0; i < 5; i++) {
+            qs[i] = kumalloc(sizeof(int));
+        }
+        assert(size_manage_areas() == 6);
+        kufree(qs[3]);
+        assert(size_manage_areas() == 6);
+        int* r;
+        r = kumalloc(sizeof(int));
+        assert(size_manage_areas() == 6);
+        kufree(r);
+        kufree(qs[0]);
+        kufree(qs[1]);
+        kufree(qs[2]);
+        kufree(qs[4]);
+    }
+    {
+        assert(size_manage_areas() == 1);
+        char *buf = kumalloc(sizeof(MEMORY_MANAGE_AREA) + 2);
+        assert(size_manage_areas() == 2);
+        int *sentinel = kumalloc(sizeof(int));
+        assert(size_manage_areas() == 3);
+        kufree(buf);
+        assert(size_manage_areas() == 3);
+        char *mini_buf = kumalloc(1);
+        assert(size_manage_areas() == 4);
+        assert(manage_head_ptr->flag == USE);
+        assert(manage_head_ptr->size == 1);
+        assert(manage_head_ptr->next->flag == NOUSE);
+        assert(manage_head_ptr->next->size == 1);
+        kufree(mini_buf);
+        kufree(sentinel);
+    }
+
+    {
+        assert(size_manage_areas() == 1);
+        char *buf = kumalloc(sizeof(MEMORY_MANAGE_AREA) + 1);
+        assert(size_manage_areas() == 2);
+        int *sentinel = kumalloc(sizeof(int));
+        assert(size_manage_areas() == 3);
+        kufree(buf);
+        assert(size_manage_areas() == 3);
+        char *mini_buf = kumalloc(1);
+        assert(size_manage_areas() == 3);
+        assert(manage_head_ptr->flag == USE);
+        assert(manage_head_ptr->size == sizeof(MEMORY_MANAGE_AREA) + 1);
+        assert(manage_head_ptr->next->flag == USE);
+        assert(manage_head_ptr->next->size == 4);
+    }
 
     return 0;
 }

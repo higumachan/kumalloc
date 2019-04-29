@@ -30,8 +30,8 @@ void* kumalloc(size_t size)
         return NULL;
     }
 
-    size_t remain_size = p->size - size;
-    if (remain_size - sizeof(MEMORY_MANAGE_AREA) >= 1) {
+    int remain_size = p->size - size;
+    if (remain_size >= sizeof(MEMORY_MANAGE_AREA) + 1) {
         MEMORY_MANAGE_AREA* q = (MEMORY_MANAGE_AREA *)((unsigned char *)(p + 1) + size);
         MEMORY_MANAGE_AREA* temp_next = p->next;
         q->prev = p;
