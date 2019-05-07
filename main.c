@@ -6,6 +6,8 @@
 
 int main()
 {
+    printf("%d\n", sizeof(MEMORY_MANAGE_AREA));
+    assert(sizeof(MEMORY_MANAGE_AREA) == 32);
     assert(size_manage_areas() == 0);
 
     int* p = kumalloc(sizeof(int));

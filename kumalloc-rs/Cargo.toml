@@ -1,0 +1,10 @@
+[package]
+name = "kumalloc-rs"
+version = "0.1.0"
+authors = ["higumachan <harekumo792154@gmail.com>"]
+edition = "2018"
+
+[build-dependencies]
+cc = { version = "1.0", features = ["parallel"] }
+
+[dependencies]
