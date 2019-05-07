@@ -21,6 +21,7 @@ typedef struct MemoryManageArea
 } MEMORY_MANAGE_AREA;
 
 void* kumalloc(size_t size);
+void* kurealloc(void *p, size_t size);
 void kufree(void* p);
 
 extern MEMORY_MANAGE_AREA* manage_head_ptr;

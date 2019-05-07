@@ -5,6 +5,9 @@
 #ifndef KUMALLOC_KUMALLOC_TEST_UTILITY_H
 #define KUMALLOC_KUMALLOC_TEST_UTILITY_H
 
+#include "kumalloc.h"
+
 int size_manage_areas();
+MEMORY_MANAGE_AREA* get_manage_area_ptr(void* p);
 
 #endif //KUMALLOC_KUMALLOC_TEST_UTILITY_H

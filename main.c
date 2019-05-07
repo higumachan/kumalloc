@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <memory.h>
 #include "kumalloc.h"
 #include "kumalloc_test_utility.h"
 
@@ -107,6 +108,38 @@ int main()
         assert(manage_head_ptr->size == sizeof(MEMORY_MANAGE_AREA) + 1);
         assert(manage_head_ptr->next->flag == USE);
         assert(manage_head_ptr->next->size == 4);
+        kufree(sentinel);
+        kufree(mini_buf);
+    }
+
+    {
+        assert(size_manage_areas() == 1);
+        unsigned char *buf = kumalloc(sizeof(int) * 5);
+        assert(get_manage_area_ptr(buf)->size == sizeof(int) * 5);
+        int *sentinel = kumalloc(sizeof(int));
+        memset(buf, -1, sizeof(int) * 5);
+        unsigned char *new_buf = kurealloc(buf, sizeof(int) * 10);
+        assert(get_manage_area_ptr(new_buf)->size == sizeof(int) * 10);
+
+        assert(memcmp(buf, new_buf, sizeof(int) * 5) == 0);
+        assert(memcmp(buf, new_buf, sizeof(int) * 10) != 0);
+        kufree(new_buf);
+        kufree(sentinel);
+        assert(size_manage_areas() == 1);
+    }
+
+    {
+        assert(size_manage_areas() == 1);
+        unsigned char *buf = kumalloc(sizeof(int) * 5);
+        assert(get_manage_area_ptr(buf)->size == sizeof(int) * 5);
+        assert(size_manage_areas() == 2);
+        unsigned char *new_buf = kurealloc(buf, sizeof(int) * 10);
+        assert(get_manage_area_ptr(new_buf)->size == sizeof(int) * 10);
+        assert(size_manage_areas() == 2);
+        assert(buf == new_buf);
+
+        kufree(new_buf);
+        assert(size_manage_areas() == 1);
     }
 
     return 0;

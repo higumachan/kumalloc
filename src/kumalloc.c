@@ -2,13 +2,16 @@
 // Created by 日熊悠太 on 2019-04-28.
 //
 
+#include <stddef.h>
 #include "kumalloc.h"
 #include "kumalloc_test_utility.h"
 
-unsigned char heap[HEAP_SIZE];
+typedef unsigned char BYTE;
+BYTE heap[HEAP_SIZE];
 MEMORY_MANAGE_AREA* manage_head_ptr = NULL;
 
 static void merge_manage_free_areas(MEMORY_MANAGE_AREA *this, const MEMORY_MANAGE_AREA *next);
+void* mymemcpy(BYTE* dest, BYTE* src, size_t size);
 
 void* kumalloc(size_t size)
 {
@@ -50,7 +53,7 @@ void* kumalloc(size_t size)
 
 void kufree(void* p)
 {
-    MEMORY_MANAGE_AREA* manage_area = ((MEMORY_MANAGE_AREA *)p) - 1;
+    MEMORY_MANAGE_AREA* manage_area = get_manage_area_ptr(p);
 
     manage_area->flag = NOUSE;
 
@@ -67,6 +70,34 @@ void kufree(void* p)
             merge_manage_free_areas(prev, manage_area);
         }
     }
+}
+
+
+void* kurealloc(void *p, size_t size)
+{
+    if (p == NULL) {
+        return kumalloc(size);
+    }
+
+    MEMORY_MANAGE_AREA* manage_area = get_manage_area_ptr(p);
+    BYTE *new_allocated_ptr;
+    if (manage_area->next != NULL && manage_area->next->flag == NOUSE && manage_area->size + manage_area->next->size >= size + 1) {
+        manage_area->size = size;
+        MEMORY_MANAGE_AREA* new_manage_area = (MEMORY_MANAGE_AREA *)((BYTE *)p + size);
+        new_manage_area->size = manage_area->size + manage_area->next->size - size;
+        new_manage_area->flag = NOUSE;
+        new_manage_area->next = manage_area->next->next;
+        new_manage_area->prev = manage_area;
+        manage_area->next = new_manage_area;
+        new_allocated_ptr = p;
+    }
+    else {
+        new_allocated_ptr = (BYTE *) kumalloc(size);
+        mymemcpy(new_allocated_ptr, (BYTE *) p, get_manage_area_ptr(p)->size);
+
+        kufree(p);
+    }
+    return new_allocated_ptr;
 }
 
 
@@ -90,4 +121,19 @@ static void merge_manage_free_areas(MEMORY_MANAGE_AREA *this, const MEMORY_MANAG
     if (this->next != NULL) {
         this->next->prev = this;
     }
+}
+
+void* mymemcpy(BYTE* dest, BYTE* src, size_t size)
+{
+    for (int i = 0; i < size; i++) {
+        *dest++ = *src++;
+    }
+
+    return dest;
+}
+
+
+MEMORY_MANAGE_AREA* get_manage_area_ptr(void* p)
+{
+    return ((MEMORY_MANAGE_AREA *)p) - 1;
 }
