@@ -4,7 +4,6 @@ fn main(){
     println!("cargo:rustc-link-search=native=/usr/local/lib");
     cc::Build::new()
         .warnings(true)
-        .flag("-Wall")
         .flag("-Wextra")
         .flag("-v")
         .flag("-g")
