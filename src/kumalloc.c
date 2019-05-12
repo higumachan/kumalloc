@@ -2,6 +2,7 @@
 // Created by 日熊悠太 on 2019-04-28.
 //
 
+#include <stdio.h>
 #include <stddef.h>
 #include "kumalloc.h"
 #include "kumalloc_test_utility.h"
@@ -15,6 +16,7 @@ void* mymemcpy(BYTE* dest, BYTE* src, size_t size);
 
 void* kumalloc(size_t size)
 {
+    size *= 16;
     if (manage_head_ptr == NULL) {
         manage_head_ptr = (MEMORY_MANAGE_AREA *)heap;
         manage_head_ptr->flag = NOUSE;
@@ -48,6 +50,7 @@ void* kumalloc(size_t size)
     }
     p->flag = USE;
 
+    printf("%d %d\n", (BYTE *)(p + 1) - heap, p + 1);
     return (void *)(p + 1);
 }
 
@@ -57,6 +60,7 @@ void kufree(void* p)
 
     manage_area->flag = NOUSE;
 
+    /*
     if (manage_area->next != NULL) {
         MEMORY_MANAGE_AREA* next = manage_area->next;
         if (next->flag == NOUSE) {
@@ -70,6 +74,7 @@ void kufree(void* p)
             merge_manage_free_areas(prev, manage_area);
         }
     }
+     */
 }
 
 

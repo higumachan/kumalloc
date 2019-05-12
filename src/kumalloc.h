@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 
-static const int HEAP_SIZE = 100000;
+static const int HEAP_SIZE = 1000000;
 static const char NOUSE = 0;
 static const char USE = 1;
 
