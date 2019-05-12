@@ -60,21 +60,19 @@ void kufree(void* p)
 
     manage_area->flag = NOUSE;
 
-    /*
-    if (manage_area->next != NULL) {
-        MEMORY_MANAGE_AREA* next = manage_area->next;
-        if (next->flag == NOUSE) {
-            merge_manage_free_areas(manage_area, next);
-        }
-    }
-
     if (manage_area->prev != NULL) {
         MEMORY_MANAGE_AREA *prev = manage_area->prev;
         if (prev->flag == NOUSE) {
             merge_manage_free_areas(prev, manage_area);
         }
     }
-     */
+
+    if (manage_area->next != NULL) {
+        MEMORY_MANAGE_AREA* next = manage_area->next;
+        if (next->flag == NOUSE) {
+            merge_manage_free_areas(manage_area, next);
+        }
+    }
 }
 
 
