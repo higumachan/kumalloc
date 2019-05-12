@@ -16,7 +16,7 @@ void* mymemcpy(BYTE* dest, BYTE* src, size_t size);
 
 void* kumalloc(size_t size)
 {
-    size *= 16;
+    //size *= 16;
     if (manage_head_ptr == NULL) {
         manage_head_ptr = (MEMORY_MANAGE_AREA *)heap;
         manage_head_ptr->flag = NOUSE;
@@ -50,7 +50,6 @@ void* kumalloc(size_t size)
     }
     p->flag = USE;
 
-    printf("%d %d\n", (BYTE *)(p + 1) - heap, p + 1);
     return (void *)(p + 1);
 }
 
@@ -60,19 +59,25 @@ void kufree(void* p)
 
     manage_area->flag = NOUSE;
 
+#if 1
     if (manage_area->prev != NULL) {
         MEMORY_MANAGE_AREA *prev = manage_area->prev;
         if (prev->flag == NOUSE) {
             merge_manage_free_areas(prev, manage_area);
+            manage_area = prev;
         }
     }
+#endif
 
+#if 1
     if (manage_area->next != NULL) {
         MEMORY_MANAGE_AREA* next = manage_area->next;
         if (next->flag == NOUSE) {
             merge_manage_free_areas(manage_area, next);
         }
     }
+#endif
+
 }
 
 
@@ -85,12 +90,13 @@ void* kurealloc(void *p, size_t size)
     MEMORY_MANAGE_AREA* manage_area = get_manage_area_ptr(p);
     BYTE *new_allocated_ptr;
     if (manage_area->next != NULL && manage_area->next->flag == NOUSE && manage_area->size + manage_area->next->size >= size + 1) {
-        manage_area->size = size;
         MEMORY_MANAGE_AREA* new_manage_area = (MEMORY_MANAGE_AREA *)((BYTE *)p + size);
         new_manage_area->size = manage_area->size + manage_area->next->size - size;
         new_manage_area->flag = NOUSE;
         new_manage_area->next = manage_area->next->next;
         new_manage_area->prev = manage_area;
+
+        manage_area->size = size;
         manage_area->next = new_manage_area;
         new_allocated_ptr = p;
     }
@@ -121,8 +127,8 @@ static void merge_manage_free_areas(MEMORY_MANAGE_AREA *this, const MEMORY_MANAG
 {
     this->next = next->next;
     this->size += next->size + sizeof(MEMORY_MANAGE_AREA);
-    if (this->next != NULL) {
-        this->next->prev = this;
+    if (next->next != NULL) {
+        next->next->prev = this;
     }
 }
 

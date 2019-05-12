@@ -60,6 +60,9 @@ int main()
         kufree(qs[4]);
     }
 
+    assert(size_manage_areas() == 1);
+    assert(manage_head_ptr->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA));
+
     {
         int* qs[5];
 
@@ -78,6 +81,10 @@ int main()
         kufree(qs[2]);
         kufree(qs[4]);
     }
+
+    assert(size_manage_areas() == 1);
+    assert(manage_head_ptr->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA));
+
     {
         assert(size_manage_areas() == 1);
         char *buf = kumalloc(sizeof(MEMORY_MANAGE_AREA) + 2);
@@ -95,6 +102,9 @@ int main()
         kufree(mini_buf);
         kufree(sentinel);
     }
+
+    assert(size_manage_areas() == 1);
+    assert(manage_head_ptr->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA));
 
     {
         assert(size_manage_areas() == 1);
@@ -114,6 +124,9 @@ int main()
         kufree(mini_buf);
     }
 
+    assert(size_manage_areas() == 1);
+    assert(manage_head_ptr->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA));
+
     {
         assert(size_manage_areas() == 1);
         unsigned char *buf = kumalloc(sizeof(int) * 5);
@@ -130,6 +143,9 @@ int main()
         assert(size_manage_areas() == 1);
     }
 
+    assert(size_manage_areas() == 1);
+    assert(manage_head_ptr->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA));
+
     {
         assert(size_manage_areas() == 1);
         unsigned char *buf = kumalloc(sizeof(int) * 5);
@@ -143,6 +159,8 @@ int main()
         kufree(new_buf);
         assert(size_manage_areas() == 1);
     }
+    assert(size_manage_areas() == 1);
+    assert(manage_head_ptr->size == sizeof(heap) - sizeof(MEMORY_MANAGE_AREA));
 
     return 0;
 }
